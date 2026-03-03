@@ -1,5 +1,5 @@
-const {getAllFilePathsWithExtension, readFile} = require('./fileSystem');
-const {readLine} = require('./console');
+const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
+const { readLine } = require('./console');
 
 const files = getFiles();
 
@@ -12,16 +12,41 @@ function getFiles() {
 }
 
 function processCommand(command) {
-    switch (command) {
+    const parts = command.split(' ');
+    const baseCommand = parts[0];
+
+    switch (baseCommand) {
         case 'exit':
             process.exit(0);
             break;
         case 'show':
             console.log(parse());
+            break;
+        case 'user':
+            const userName = parts[1];
+            console.log(userTodos(userName))
+            break;
         default:
             console.log('wrong command');
             break;
     }
+}
+
+function userTodos(userName) {
+    const todos = parse();
+    const result = [];
+
+    if (!userName) return result;
+
+    for (const todo of todos) {
+        const authorPart = todo.split(';')[0];
+
+        if (authorPart.toLowerCase().includes(userName.toLowerCase())) {
+            result.push(todo);
+        }
+    }
+
+    return result;
 }
 
 function parse() {
