@@ -73,15 +73,13 @@ function userTodos(userName) {
 function parse() {
     const todos = [];
 
-    for (const file of files) {
-        const lines = file.split(/\r?\n/);
+    const todoRegex = /\/\/\s*todo\s*:?.*/gi;
 
-        for (let line of lines) {
-            const index = line.indexOf('// TODO');
-            if (index !== -1) {
-                const todo = line.slice(index).trim();
-                todos.push(todo);
-            }
+    for (const file of files) {
+        const matches = file.match(todoRegex);
+
+        if (matches) {
+            todos.push(...matches.map(m => m.trim()));
         }
     }
 
