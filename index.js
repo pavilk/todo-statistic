@@ -34,7 +34,6 @@ function parse() {
             const index = line.indexOf('// TODO');
 
             if (index !== -1) {
-                // оставляем только часть начиная с // TODO
                 const todo = line.slice(index).trim();
                 todos.push(todo);
             }
