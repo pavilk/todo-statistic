@@ -35,9 +35,9 @@ function processCommand(command) {
             if (type === 'importance') {
                 console.log(sortImportance());
             } else if (type === 'user') {
-                console.log(sortUser());
+                sortUser();
             } else {
-                console.log(sortDate());
+                sortDate();
             }
             break;
 
@@ -116,19 +116,15 @@ function getUserFromTodo(todo) {
 function sortUser() {
     const usersTodos = {};
     const noUser = [];
-
     for (const todo of parsedFile) {
         const user = getUserFromTodo(todo);
-
         if (!user) {
             noUser.push(todo);
             continue;
         }
-
         if (!usersTodos[user]) {
             usersTodos[user] = [];
         }
-
         usersTodos[user].push(todo);
     }
 
@@ -144,6 +140,38 @@ function sortUser() {
 }
 
 function sortDate() {
+    const todosWithDate = [];
+    const todosWithoutDate = [];
+    for (const todo of parsedFile) {
+        const parts = todo.split(';');
+        let foundDate = null;
+        if (parts.length === 3) {
+            const trimmed = parts[1].trim();
+            foundDate = trimmed;
+        }
 
+        if (foundDate) {
+            todosWithDate.push({
+                text: todo,
+                date: foundDate
+            });
+        } else {
+            todosWithoutDate.push(todo);
+        }
+    }
+    todosWithDate.sort((a, b) => {
+        if (a.date > b.date)
+            return -1;
+        if (a.date < b.date)
+            return 1;
+        return 0;
+    });
+
+    for (const item of todosWithDate) {
+        console.log(item.text);
+    }
+    for (const item of todosWithoutDate) {
+        console.log(item);
+    }
 }
-// TODO you can do it!
+// TODO Do it!
