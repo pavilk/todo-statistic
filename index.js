@@ -16,10 +16,31 @@ function processCommand(command) {
         case 'exit':
             process.exit(0);
             break;
+        case 'show':
+            console.log(parse());
         default:
             console.log('wrong command');
             break;
     }
 }
 
+function parse() {
+    const todos = [];
+
+    for (const file of files) {
+        const lines = file.split(/\r?\n/);
+
+        for (let line of lines) {
+            const index = line.indexOf('// TODO');
+
+            if (index !== -1) {
+                // оставляем только часть начиная с // TODO
+                const todo = line.slice(index).trim();
+                todos.push(todo);
+            }
+        }
+    }
+
+    return todos;
+}
 // TODO you can do it!
