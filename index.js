@@ -21,7 +21,7 @@ function processCommand(command) {
             process.exit(0);
             break;
         case 'show':
-            console.log(parse());
+            console.log(parsedFile);
             break;
         case 'user':
             const userName = parts[1];
@@ -30,6 +30,17 @@ function processCommand(command) {
         case 'important':
             console.log(findImportant());
             break;
+        case 'sort':
+            const type = parts[1];
+            if (type === 'importance') {
+                sortImportance();
+            } else if (type === 'user') {
+                sortUser();
+            } else {
+                sortDate();
+            }
+            break;
+
         default:
             console.log('wrong command');
             break;
@@ -39,12 +50,10 @@ function processCommand(command) {
 function userTodos(userName) {
     const todos = parse();
     const result = [];
-
-    if (!userName) return result;
-
+    if (!userName)
+        return result;
     for (const todo of todos) {
         const authorPart = todo.split(';')[0];
-
         if (authorPart.toLowerCase().includes(userName.toLowerCase())) {
             result.push(todo);
         }
@@ -71,11 +80,25 @@ function parse() {
 function findImportant() {
     let result = [];
     for (const line of parsedFile) {
-        const index = line.indexOf('!')
+        const index = line.indexOf('!');
         if (index !== -1) {
             result.push(line);
         }
     }
     return result;
+}
+
+function sortImportance() {
+
+}
+
+function sortUser() {
+
+
+}
+
+function sortDate() {
+
+
 }
 // TODO you can do it!
