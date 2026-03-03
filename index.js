@@ -33,11 +33,11 @@ function processCommand(command) {
         case 'sort':
             const type = parts[1];
             if (type === 'importance') {
-                sortImportance();
+                console.log(sortImportance());
             } else if (type === 'user') {
-                sortUser();
+                console.log(sortUser());
             } else {
-                sortDate();
+                console.log(sortDate());
             }
             break;
 
@@ -89,7 +89,21 @@ function findImportant() {
 }
 
 function sortImportance() {
-
+    const preprocc = [];
+    for (const line of parsedFile) {
+        const index = line.indexOf('!');
+        let countOfSymbols = 0;
+        if (index !== -1) {
+            for (const symbol of line) {
+                if (symbol === '!') {
+                    countOfSymbols++;
+                }
+            }
+        }
+        preprocc.push( [line, countOfSymbols] );
+    }
+    preprocc.sort((a, b) => b[1] - a[1]);
+    return preprocc.map(item => item[0]);
 }
 
 function sortUser() {
@@ -98,7 +112,6 @@ function sortUser() {
 }
 
 function sortDate() {
-
 
 }
 // TODO you can do it!
