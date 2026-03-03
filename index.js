@@ -20,16 +20,20 @@ function processCommand(command) {
         case 'exit':
             process.exit(0);
             break;
+
         case 'show':
             console.log(parsedFile);
             break;
+
         case 'user':
             const userName = parts[1];
-            console.log(userTodos(userName))
+            console.log(userTodos(userName));
             break;
+
         case 'important':
             console.log(findImportant());
             break;
+
         case 'sort':
             const type = parts[1];
             if (type === 'importance') {
@@ -41,6 +45,11 @@ function processCommand(command) {
             }
             break;
 
+        case 'date':
+            const dateArg = parts[1];
+            console.log(findByDate(dateArg));
+            break;
+
         default:
             console.log('wrong command');
             break;
@@ -48,11 +57,10 @@ function processCommand(command) {
 }
 
 function userTodos(userName) {
-    const todos = parse();
     const result = [];
-    if (!userName)
-        return result;
-    for (const todo of todos) {
+    if (!userName) return result;
+
+    for (const todo of parsedFile) {
         const authorPart = todo.split(';')[0];
         if (authorPart.toLowerCase().includes(userName.toLowerCase())) {
             result.push(todo);
@@ -64,8 +72,10 @@ function userTodos(userName) {
 
 function parse() {
     const todos = [];
+
     for (const file of files) {
         const lines = file.split(/\r?\n/);
+
         for (let line of lines) {
             const index = line.indexOf('// TODO');
             if (index !== -1) {
@@ -74,57 +84,62 @@ function parse() {
             }
         }
     }
+
     return todos;
 }
 
 function findImportant() {
-    let result = [];
+    const result = [];
+
     for (const line of parsedFile) {
-        const index = line.indexOf('!');
-        if (index !== -1) {
+        if (line.includes('!')) {
             result.push(line);
         }
     }
+
     return result;
 }
 
 function sortImportance() {
-    const preprocc = [];
+    const preprocessed = [];
+
     for (const line of parsedFile) {
-        const index = line.indexOf('!');
-        let countOfSymbols = 0;
-        if (index !== -1) {
-            for (const symbol of line) {
-                if (symbol === '!') {
-                    countOfSymbols++;
-                }
-            }
+        let count = 0;
+
+        for (const symbol of line) {
+            if (symbol === '!') count++;
         }
-        preprocc.push( [line, countOfSymbols] );
+
+        preprocessed.push([line, count]);
     }
-    preprocc.sort((a, b) => b[1] - a[1]);
-    return preprocc.map(item => item[0]);
+
+    preprocessed.sort((a, b) => b[1] - a[1]);
+
+    return preprocessed.map(item => item[0]);
 }
 
 function getUserFromTodo(todo) {
-    const parts = todo.split(';'); 
+    const parts = todo.split(';');
     const firstPart = parts[0];
-    const user = firstPart.replace('// TODO', '').trim();
-    return user;
+    return firstPart.replace('// TODO', '').trim();
 }
 
 function sortUser() {
     const usersTodos = {};
     const noUser = [];
+
     for (const todo of parsedFile) {
         const user = getUserFromTodo(todo);
+
         if (!user) {
             noUser.push(todo);
             continue;
         }
+
         if (!usersTodos[user]) {
             usersTodos[user] = [];
         }
+
         usersTodos[user].push(todo);
     }
 
@@ -142,36 +157,56 @@ function sortUser() {
 function sortDate() {
     const todosWithDate = [];
     const todosWithoutDate = [];
+
     for (const todo of parsedFile) {
         const parts = todo.split(';');
-        let foundDate = null;
-        if (parts.length === 3) {
-            const trimmed = parts[1].trim();
-            foundDate = trimmed;
-        }
 
-        if (foundDate) {
-            todosWithDate.push({
-                text: todo,
-                date: foundDate
-            });
+        if (parts.length >= 3) {
+            const date = parts[1].trim();
+
+            if (date) {
+                todosWithDate.push({
+                    text: todo,
+                    date: date
+                });
+            } else {
+                todosWithoutDate.push(todo);
+            }
         } else {
             todosWithoutDate.push(todo);
         }
     }
+
     todosWithDate.sort((a, b) => {
-        if (a.date > b.date)
-            return -1;
-        if (a.date < b.date)
-            return 1;
+        if (a.date > b.date) return -1;
+        if (a.date < b.date) return 1;
         return 0;
     });
 
     for (const item of todosWithDate) {
         console.log(item.text);
     }
+
     for (const item of todosWithoutDate) {
         console.log(item);
     }
 }
-// TODO Do it!
+
+function findByDate(dateInput) {
+    if (!dateInput) return [];
+
+    const result = [];
+
+    for (const todo of parsedFile) {
+        const parts = todo.split(';');
+        if (parts.length < 3) continue;
+
+        const date = parts[1].trim();
+
+        if (date > dateInput) {
+            result.push(todo);
+        }
+    }
+
+    return result;
+}
