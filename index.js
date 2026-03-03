@@ -92,9 +92,41 @@ function sortImportance() {
 
 }
 
+function getUserFromTodo(todo) {
+    const parts = todo.split(';'); 
+    const firstPart = parts[0];
+    const user = firstPart.replace('// TODO', '').trim();
+    return user;
+}
+
 function sortUser() {
+    const usersTodos = {};
+    const noUser = [];
 
+    for (const todo of parsedFile) {
+        const user = getUserFromTodo(todo);
 
+        if (!user) {
+            noUser.push(todo);
+            continue;
+        }
+
+        if (!usersTodos[user]) {
+            usersTodos[user] = [];
+        }
+
+        usersTodos[user].push(todo);
+    }
+
+    for (const user of Object.keys(usersTodos)) {
+        console.log(`\n${user}:`);
+        usersTodos[user].forEach(todo => console.log(`  ${todo}`));
+    }
+
+    if (noUser.length > 0) {
+        console.log('\nNo user:');
+        noUser.forEach(todo => console.log(`  ${todo}`));
+    }
 }
 
 function sortDate() {
