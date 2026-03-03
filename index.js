@@ -11,7 +11,7 @@ function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
     return filePaths.map(path => readFile(path));
 }
-
+//todO:Digi;
 function processCommand(command) {
     const parts = command.split(' ');
     const baseCommand = parts[0];
